@@ -1,0 +1,131 @@
+.driversTable {
+    width: 60%;
+    margin: 0 auto;
+    border-collapse: collapse;
+}
+
+.driversTable th, .driversTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.driversTable th {
+    background-color: #f2f2f2;
+}
+
+.driversTable tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.driversTable tr:hover {
+    background-color: #ddd;
+}
+
+.addBtn{
+    background: #b85c1b;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    border: #b85c1b;
+    margin-top: 10px;
+    width: 380px;
+    height: 30px;
+}
+
+.addBtn:hover{
+    background: #974a13;
+}
+
+.cancelBtn {
+    background: rgb(146, 36, 36);
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    border: #b85c1b;
+    width: 150px;
+    height: 40px;
+}
+
+.cancelBtn:hover{
+    background: rgb(100, 24, 24);
+}
+
+.confirmBtn {
+    background: #288b38;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    border: #b85c1b;
+    width: 150px;
+    height: 40px;
+}
+
+.confirmBtn:hover{
+    background: #1b5f27;
+}
+
+
+.modal {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    border-radius: 10px;
+    width: 650px;
+    height: 650px;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+}
+
+.modal input[type="text"],
+.modal input[type="number"] {
+  width: 380px;
+  padding: 10px;
+  margin: 5px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.modal input[type="text"]:focus,
+.modal input[type="number"]:focus {
+  outline: none;
+  border-color: #4CAF50;
+}
+
+.raceTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px; 
+    margin-bottom: 10px;
+}
+
+.raceTable th, .raceTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.raceTable th {
+    background-color: #f2f2f2;
+    text-align: left;
+}
+  
+.raceTable tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
