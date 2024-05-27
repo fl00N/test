@@ -7,9 +7,9 @@ Modal.setAppElement('#root');
 function DriversPage() {
 
   const [drivers, setDrivers] = useState([
-    { id: 1, name: 'Lewis Hamilton', races: 270 },
-    { id: 2, name: 'Sebastian Vettel', races: 257 },
-    { id: 3, name: 'Max Verstappen', races: 123 }
+    { id: 1, name: 'Lewis Hamilton', races: 270},
+    { id: 2, name: 'Sebastian Vettel', races: 257},
+    { id: 3, name: 'Max Verstappen', races: 123}
   ]);
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -31,7 +31,10 @@ function DriversPage() {
   };
 
   const addDriver = () => {
-    if (!newDriverName || newDriverRaces.length === 0) return;
+    if (!newDriverName || newDriverRaces.length === 0) {
+      alert("Please enter a driver's name and add at least one race")
+      return
+    }
     const totalRaces = newDriverRaces.length;
     const newDriver = {
       id: drivers.length + 1,
@@ -47,6 +50,10 @@ function DriversPage() {
     const speedsArray = newRaceData.speeds.split(',').map(speed => speed.trim());
     setNewDriverRaces([...newDriverRaces, { race: newRaceData.race, speeds: speedsArray }]);
     setNewRaceData({ race: '', speeds: '' });
+  };
+
+  const deleteDriver = (id) => {
+    setDrivers(drivers.filter(driver => driver.id !== id));
   };
 
   return (
@@ -69,6 +76,9 @@ function DriversPage() {
               <td>{driver.id}</td>
               <td>{driver.name}</td>
               <td>{driver.races}</td>
+              <td>
+                <button key={driver.id} onClick={() => deleteDriver(driver.id)} className='deleteBtn'>Delete</button>
+              </td>
             </tr>
           ))}
         </tbody>
