@@ -1,3 +1,14 @@
+.btnHome{
+    width: 30px;
+    height: 30px;
+    margin-left: 10px;
+    color: #000;
+}
+
+.btnHome:hover{
+    color: #686767;
+}
+
 .driversTable {
     width: 60%;
     margin: 0 auto;
@@ -114,7 +125,14 @@
     border-collapse: collapse;
     margin-top: 10px; 
     margin-bottom: 10px;
+
 }
+
+.raceTableContainer {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 10px;
+  }
 
 .raceTable th, .raceTable td {
     border: 1px solid #ddd;
@@ -142,4 +160,8 @@
     margin: 4px 2px;
     cursor: pointer;
     border-radius: 4px;
+}
+
+.errorMessage{
+    color: red;
 }

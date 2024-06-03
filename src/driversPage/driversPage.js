@@ -1,64 +1,149 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import './driversPage.css';
+import Button from '../components/button';
+import { TiHome } from "react-icons/ti";
+import { useEffect } from 'react';
 
 Modal.setAppElement('#root');
 
 function DriversPage() {
 
   const [drivers, setDrivers] = useState([
-    { id: 1, name: 'Lewis Hamilton', races: 270},
-    { id: 2, name: 'Sebastian Vettel', races: 257},
-    { id: 3, name: 'Max Verstappen', races: 123}
+    {
+      id: 1,
+      name: 'Lewis Hamilton',
+      races: 2,
+      raceData: [
+        { race: 'Race 1', laps: ['1', '2', '3'] },
+        { race: 'Race 2', laps: ['1', '2', '3', '4'] }
+      ]
+    },
+    {
+      id: 2,
+      name: 'Sebastian Vettel',
+      races: 2,
+      raceData: [
+        { race: 'Race 1', laps: ['1', '2'] },
+        { race: 'Race 2', laps: ['1', '2', '3'] }
+      ]
+    },
+    {
+      id: 3,
+      name: 'Max Verstappen',
+      races: 1,
+      raceData: [
+        { race: 'Race 1', laps: ['1', '2', '3'] }
+      ]
+    }
   ]);
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [newDriverName, setNewDriverName] = useState('');
-  const [newRaceData, setNewRaceData] = useState({ race: '', speeds: '' });
+  const [newRaceData, setNewRaceData] = useState({ race: '', laps: '' });
   const [newDriverRaces, setNewDriverRaces] = useState([]);
   const [showRaceInputs, setShowRaceInputs] = useState(false);
+  const [editingDriver, setEditingDriver] = useState(null);
+  const [modalType, setModalType] = useState('add');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const openModal = () => {
+  useEffect(() => {
+    if (modalType === 'edit' && editingDriver) {
+      setNewDriverName(editingDriver.name);
+      setNewDriverRaces(editingDriver.raceData);
+    } else {
+      setNewDriverName('');
+      setNewDriverRaces([]);
+    }
+  }, [modalType, editingDriver]);
+
+  const openAddModal = () => {
+    setModalType('add');
     setModalIsOpen(true);
   };
-
+  
+  const openEditModal = (driver) => {
+    console.log("Editing Driver:", driver);
+    setModalType('edit');
+    setEditingDriver(driver);
+    setModalIsOpen(true);
+  };
   const closeModal = () => {
     setModalIsOpen(false);
     setNewDriverName('');
-    setNewRaceData({ race: '', speeds: '' });
+    setNewRaceData({ race: '', laps: '' });
     setNewDriverRaces([]);
     setShowRaceInputs(false);
+    setEditingDriver(null);
+    setErrorMessage('');
   };
 
   const addDriver = () => {
     if (!newDriverName || newDriverRaces.length === 0) {
-      alert("Please enter a driver's name and add at least one race")
-      return
+      alert("Please enter a driver's name and add at least one race");
+      return;
     }
+  
+    const driverExists = drivers.some(driver => driver.name.toLowerCase() === newDriverName.toLowerCase() && driver.id !== (editingDriver ? editingDriver.id : null));
+
+      if (driverExists) {
+        setErrorMessage('Driver name already exists');
+        return;
+      }
+  
     const totalRaces = newDriverRaces.length;
     const newDriver = {
-      id: drivers.length + 1,
+      id: editingDriver ? editingDriver.id : drivers.length + 1,
       name: newDriverName,
-      races: totalRaces
+      races: totalRaces,
+      raceData: newDriverRaces
     };
-    setDrivers([...drivers, newDriver]);
+  
+    if (editingDriver) {
+      const updatedDrivers = drivers.map(driver => {
+        if (driver.id === editingDriver.id) {
+          return newDriver;
+        }
+        return driver;
+      });
+      setDrivers(updatedDrivers);
+    } else {
+      setDrivers([...drivers, newDriver]);
+    }
+  
     closeModal();
   };
+  
 
   const addRace = () => {
-    if (!newRaceData.race || !newRaceData.speeds) return;
-    const speedsArray = newRaceData.speeds.split(',').map(speed => speed.trim());
-    setNewDriverRaces([...newDriverRaces, { race: newRaceData.race, speeds: speedsArray }]);
-    setNewRaceData({ race: '', speeds: '' });
+    if (!newRaceData.race || !newRaceData.laps) return;
+    const lapsArray = newRaceData.laps.split(',').map(lap => lap.trim());
+    setNewDriverRaces([...newDriverRaces, { race: newRaceData.race, laps: lapsArray }]);
+    setNewRaceData({ race: '', laps: '' });
   };
 
   const deleteDriver = (id) => {
     setDrivers(drivers.filter(driver => driver.id !== id));
   };
 
+  const deleteRace = (index) => {
+    const updatedRaces = [...newDriverRaces];
+    updatedRaces.splice(index, 1);
+    setNewDriverRaces(updatedRaces);
+  };
+
   return (
 
     <div>
+
+      <a href='/'
+      style=
+      {{ 
+        position: 'absolute',
+        left: '0'
+      }}>
+        <TiHome className='btnHome'/>
+      </a>
 
       <h1 className='driversText'>Drivers</h1>
 
@@ -68,6 +153,7 @@ function DriversPage() {
             <th>ID</th>
             <th>Name</th>
             <th>Races</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -77,17 +163,34 @@ function DriversPage() {
               <td>{driver.name}</td>
               <td>{driver.races}</td>
               <td>
-                <button key={driver.id} onClick={() => deleteDriver(driver.id)} className='deleteBtn'>Delete</button>
+                <Button 
+                  key={driver.id} 
+                  onClick={() => deleteDriver(driver.id)} 
+                  backgroundColor="rgb(146, 36, 36)" 
+                  size='small'
+                  margin='5px'
+                >
+                  Delete
+                </Button>
+
+                <Button 
+                  backgroundColor="#288b38" 
+                  size='small'
+                  onClick={() => openEditModal(driver)}
+                >
+                  Edit
+                </Button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      <button onClick={openModal} className='addBtn'>+</button>
+      <Button onClick={openAddModal} backgroundColor='#b85c1b' size='large' margin='10px'>+</Button>
 
       <Modal isOpen={modalIsOpen} onRequestClose={closeModal} className="modal">
-        <h2>New Driver</h2>
+        <h2>{modalType === 'add' ? 'New Driver' : 'Edit Driver'}</h2>
+        {errorMessage && <p className="errorMessage">{errorMessage}</p>}
         <div>
           <input
             type="text"
@@ -98,13 +201,14 @@ function DriversPage() {
           />
         </div>
         {newDriverRaces.length > 0 && (
-          <div>
+          <div className="raceTableContainer">
             <table className="raceTable">
               <thead>
                 <tr>
                   <th>Race Number</th>
                   <th>Race Name</th>
-                  <th>Lap Speeds (km/h)</th>
+                  <th>Laps</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -112,7 +216,17 @@ function DriversPage() {
                   <tr key={index}>
                     <td>{index + 1}</td>
                     <td>{raceData.race}</td>
-                    <td>{raceData.speeds.join(', ')}</td>
+                    <td>{raceData.laps.join(', ')}</td>
+                    <td>
+                      <Button 
+                        onClick={() => deleteRace(index)} 
+                        backgroundColor="rgb(146, 36, 36)" 
+                        size='small'
+                        margin='5px'
+                      >
+                        Delete
+                      </Button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -131,19 +245,23 @@ function DriversPage() {
             />
             <input
               type="text"
-              placeholder="Speed (km/h)"
-              value={newRaceData.speeds}
-              onChange={e => setNewRaceData({ ...newRaceData, speeds: e.target.value })}
+              placeholder="Laps"
+              value={newRaceData.laps}
+              onChange={e => setNewRaceData({ ...newRaceData, laps: e.target.value })}
               required
             />
           </div>
         )}
 
-        <button onClick={() => { addRace(); setShowRaceInputs(true); }} className='addBtn'>+</button>
+        {/* <button onClick={() => { addRace(); setShowRaceInputs(true); }} className='addBtn'>+</button> */}
+
+        <Button onClick={() => { addRace(); setShowRaceInputs(true); }} backgroundColor='#b85c1b' size='large' margin='10px'>+</Button>
 
         <div style={{ marginTop: '50px' }}>
-          <button onClick={closeModal} className="cancelBtn" style={{ marginRight: '80px' }}>Cancel</button>
-          <button onClick={addDriver} className="confirmBtn">Confirm</button>
+          {/* <button onClick={closeModal} className="cancelBtn" style={{ marginRight: '80px' }}>Cancel</button>
+          <button onClick={addDriver} className="confirmBtn">Confirm</button> */}
+          <Button onClick={closeModal} backgroundColor="rgb(146, 36, 36)" size='large' margin='30px'>Cancel</Button>      
+          <Button onClick={addDriver} backgroundColor="#288b38" size='large' margin='30px'>Confirm</Button>
         </div>
       </Modal>
     </div>
