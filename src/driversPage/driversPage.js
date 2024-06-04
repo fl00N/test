@@ -120,6 +120,12 @@ function DriversPage() {
     const lapsArray = newRaceData.laps.split(',').map(lap => lap.trim());
     setNewDriverRaces([...newDriverRaces, { race: newRaceData.race, laps: lapsArray }]);
     setNewRaceData({ race: '', laps: '' });
+    setShowRaceInputs(false);
+  };
+
+  const cancelRace = () => {
+    setNewRaceData({ race: '', laps: '' });
+    setShowRaceInputs(false);
   };
 
   const deleteDriver = (id) => {
@@ -250,16 +256,18 @@ function DriversPage() {
               onChange={e => setNewRaceData({ ...newRaceData, laps: e.target.value })}
               required
             />
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Button onClick={cancelRace} backgroundColor="rgb(146, 36, 36)" size='small' margin='5px'>✖</Button>
+              <Button onClick={addRace} backgroundColor="#288b38" size='small' margin='5px'>✔</Button>
+            </div>
           </div>
         )}
 
-        {/* <button onClick={() => { addRace(); setShowRaceInputs(true); }} className='addBtn'>+</button> */}
-
-        <Button onClick={() => { addRace(); setShowRaceInputs(true); }} backgroundColor='#b85c1b' size='large' margin='10px'>+</Button>
+        {!showRaceInputs && (
+          <Button onClick={() => setShowRaceInputs(true)} backgroundColor='#b85c1b' size='large' margin='10px'>+</Button>
+        )}
 
         <div style={{ marginTop: '50px' }}>
-          {/* <button onClick={closeModal} className="cancelBtn" style={{ marginRight: '80px' }}>Cancel</button>
-          <button onClick={addDriver} className="confirmBtn">Confirm</button> */}
           <Button onClick={closeModal} backgroundColor="rgb(146, 36, 36)" size='large' margin='30px'>Cancel</Button>      
           <Button onClick={addDriver} backgroundColor="#288b38" size='large' margin='30px'>Confirm</Button>
         </div>
