@@ -15,8 +15,8 @@ function DriversPage() {
       name: 'Lewis Hamilton',
       races: 2,
       raceData: [
-        { race: 'Race 1', laps: ['1', '2', '3'] },
-        { race: 'Race 2', laps: ['1', '2', '3', '4'] }
+        { race: 'Race 1', laps: 3, time: '30' },
+        { race: 'Race 2', laps: 4, time: '28' }
       ]
     },
     {
@@ -24,8 +24,8 @@ function DriversPage() {
       name: 'Sebastian Vettel',
       races: 2,
       raceData: [
-        { race: 'Race 1', laps: ['1', '2'] },
-        { race: 'Race 2', laps: ['1', '2', '3'] }
+        { race: 'Race 1', laps: 2, time: '20' },
+        { race: 'Race 2', laps: 3, time: '25' }
       ]
     },
     {
@@ -33,7 +33,7 @@ function DriversPage() {
       name: 'Max Verstappen',
       races: 1,
       raceData: [
-        { race: 'Race 1', laps: ['1', '2', '3'] }
+        { race: 'Race 1', laps: 3, time: '27' }
       ]
     }
   ]);
@@ -71,7 +71,7 @@ function DriversPage() {
   const closeModal = () => {
     setModalIsOpen(false);
     setNewDriverName('');
-    setNewRaceData({ race: '', laps: '' });
+    setNewRaceData({ race: '', laps: '', time: '' });
     setNewDriverRaces([]);
     setShowRaceInputs(false);
     setEditingDriver(null);
@@ -116,15 +116,19 @@ function DriversPage() {
   
 
   const addRace = () => {
-    if (!newRaceData.race || !newRaceData.laps) return;
-    const lapsArray = newRaceData.laps.split(',').map(lap => lap.trim());
-    setNewDriverRaces([...newDriverRaces, { race: newRaceData.race, laps: lapsArray }]);
-    setNewRaceData({ race: '', laps: '' });
+    if (!newRaceData.race || !newRaceData.laps || !newRaceData.time) {
+      alert("Please fill in all fields for the race");
+      return;
+    }
+    if (!newRaceData.race || !newRaceData.laps || !newRaceData.time) return;
+    const lapsNumber = parseInt(newRaceData.laps.trim());
+    setNewDriverRaces([...newDriverRaces, { race: newRaceData.race, laps: lapsNumber, time: newRaceData.time }]);
+    setNewRaceData({ race: '', laps: '', time: '' });
     setShowRaceInputs(false);
   };
 
   const cancelRace = () => {
-    setNewRaceData({ race: '', laps: '' });
+    setNewRaceData({ race: '', laps: '', time: '' });
     setShowRaceInputs(false);
   };
 
@@ -136,6 +140,12 @@ function DriversPage() {
     const updatedRaces = [...newDriverRaces];
     updatedRaces.splice(index, 1);
     setNewDriverRaces(updatedRaces);
+  };
+
+  const calculateBestAverageLap = (driver) => {
+    if (driver.raceData.length === 0) return 'N/A';
+    const bestAvgLap = Math.min(...driver.raceData.map(race => parseFloat(race.time) / race.laps));
+    return `${bestAvgLap.toFixed(2)}m/lap`;
   };
 
   return (
@@ -159,6 +169,7 @@ function DriversPage() {
             <th>ID</th>
             <th>Name</th>
             <th>Races</th>
+            <th>Best Avg. Lap</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -168,6 +179,7 @@ function DriversPage() {
               <td>{driver.id}</td>
               <td>{driver.name}</td>
               <td>{driver.races}</td>
+              <td>{calculateBestAverageLap(driver)}</td>
               <td>
                 <Button 
                   key={driver.id} 
@@ -198,9 +210,10 @@ function DriversPage() {
         <h2>{modalType === 'add' ? 'New Driver' : 'Edit Driver'}</h2>
         {errorMessage && <p className="errorMessage">{errorMessage}</p>}
         <div>
+          <h4 style={{margin: '0px', marginBottom: '5px'}}>Name</h4>
           <input
             type="text"
-            placeholder="Name"
+            placeholder="ex. Fernando Alonso"
             value={newDriverName}
             onChange={e => setNewDriverName(e.target.value)}
             required
@@ -214,6 +227,7 @@ function DriversPage() {
                   <th>Race Number</th>
                   <th>Race Name</th>
                   <th>Laps</th>
+                  <th>Time</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -222,7 +236,8 @@ function DriversPage() {
                   <tr key={index}>
                     <td>{index + 1}</td>
                     <td>{raceData.race}</td>
-                    <td>{raceData.laps.join(', ')}</td>
+                    <td>{raceData.laps}</td>
+                    <td>{raceData.time}m</td>
                     <td>
                       <Button 
                         onClick={() => deleteRace(index)} 
@@ -239,9 +254,11 @@ function DriversPage() {
             </table>
           </div>
         )}
-        
+
         {showRaceInputs && (
           <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <h4 style={{margin: '15px 0px 5px 0px'}}>Races</h4>
+
             <input
               type="text"
               placeholder="Race Name"
@@ -254,6 +271,13 @@ function DriversPage() {
               placeholder="Laps"
               value={newRaceData.laps}
               onChange={e => setNewRaceData({ ...newRaceData, laps: e.target.value })}
+              required
+            />
+            <input
+              type="text"
+              placeholder="Time (minutes)"
+              value={newRaceData.time}
+              onChange={e => setNewRaceData({ ...newRaceData, time: e.target.value })}
               required
             />
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
