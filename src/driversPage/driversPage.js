@@ -15,17 +15,18 @@ function DriversPage() {
       name: 'Lewis Hamilton',
       races: 2,
       raceData: [
-        { race: 'Race 1', laps: 3, time: '30' },
-        { race: 'Race 2', laps: 4, time: '28' }
+        { race: 'Race 1', laps: 61, time: '83' },
+        { race: 'Race 2', laps: 59, time: '90' }
       ]
     },
     {
       id: 2,
       name: 'Sebastian Vettel',
-      races: 2,
+      races: 3,
       raceData: [
-        { race: 'Race 1', laps: 2, time: '20' },
-        { race: 'Race 2', laps: 3, time: '25' }
+        { race: 'Race 1', laps: 61, time: '83' },
+        { race: 'Race 2', laps: 61, time: '84' },
+        { race: 'Race 3', laps: 59, time: '85' }
       ]
     },
     {
@@ -33,7 +34,7 @@ function DriversPage() {
       name: 'Max Verstappen',
       races: 1,
       raceData: [
-        { race: 'Race 1', laps: 3, time: '27' }
+        { race: 'Race 1', laps: 61, time: '80' }
       ]
     }
   ]);
@@ -46,6 +47,7 @@ function DriversPage() {
   const [editingDriver, setEditingDriver] = useState(null);
   const [modalType, setModalType] = useState('add');
   const [errorMessage, setErrorMessage] = useState('');
+  const [sortType, setSortType] = useState('id');
 
   useEffect(() => {
     if (modalType === 'edit' && editingDriver) {
@@ -121,8 +123,7 @@ function DriversPage() {
       return;
     }
     if (!newRaceData.race || !newRaceData.laps || !newRaceData.time) return;
-    const lapsNumber = parseInt(newRaceData.laps.trim());
-    setNewDriverRaces([...newDriverRaces, { race: newRaceData.race, laps: lapsNumber, time: newRaceData.time }]);
+    setNewDriverRaces([...newDriverRaces, { race: newRaceData.race, laps: parseInt(newRaceData.laps), time: newRaceData.time }]);
     setNewRaceData({ race: '', laps: '', time: '' });
     setShowRaceInputs(false);
   };
@@ -145,8 +146,20 @@ function DriversPage() {
   const calculateBestAverageLap = (driver) => {
     if (driver.raceData.length === 0) return 'N/A';
     const bestAvgLap = Math.min(...driver.raceData.map(race => parseFloat(race.time) / race.laps));
-    return `${bestAvgLap.toFixed(2)}m/lap`;
+    return bestAvgLap.toFixed(2);
   };
+
+  const sortedDrivers = [...drivers].sort((a, b) => {
+    if (sortType === 'bestTime') {
+      const bestTimeA = calculateBestAverageLap(a) === 'N/A' ? Infinity : parseFloat(calculateBestAverageLap(a));
+      const bestTimeB = calculateBestAverageLap(b) === 'N/A' ? Infinity : parseFloat(calculateBestAverageLap(b));
+      return bestTimeA - bestTimeB;
+    } else if (sortType === 'races') {
+      return b.races - a.races;
+    } else {
+      return a.id - b.id;
+    }
+  });
 
   return (
 
@@ -163,6 +176,12 @@ function DriversPage() {
 
       <h1 className='driversText'>Drivers</h1>
 
+        <div style={{position: 'relative', left: '239px'}}>
+          <Button onClick={() => setSortType('id')} backgroundColor={sortType === 'id' ? '#b85c1b' : '#ccc'} size='medium' margin='10px'>Sort by ID</Button>
+          <Button onClick={() => setSortType('bestTime')} backgroundColor={sortType === 'bestTime' ? '#b85c1b' : '#ccc'} size='medium' margin='10px'>Sort by Best Time</Button>
+          <Button onClick={() => setSortType('races')} backgroundColor={sortType === 'races' ? '#b85c1b' : '#ccc'} size='medium' margin='10px'>Sort by Races</Button>
+        </div>
+
       <table className='driversTable'>
         <thead>
           <tr>
@@ -174,12 +193,12 @@ function DriversPage() {
           </tr>
         </thead>
         <tbody>
-          {drivers.map(driver => (
+          {sortedDrivers.map(driver => (
             <tr key={driver.id}>
               <td>{driver.id}</td>
               <td>{driver.name}</td>
               <td>{driver.races}</td>
-              <td>{calculateBestAverageLap(driver)}</td>
+              <td>{calculateBestAverageLap(driver)}m/lap</td>
               <td>
                 <Button 
                   key={driver.id} 
@@ -267,14 +286,18 @@ function DriversPage() {
               required
             />
             <input
-              type="text"
+              type="number"
+              min="0"
+              step="1"
               placeholder="Laps"
               value={newRaceData.laps}
               onChange={e => setNewRaceData({ ...newRaceData, laps: e.target.value })}
               required
             />
             <input
-              type="text"
+              type="number"
+              min="0"
+              step="1"
               placeholder="Time (minutes)"
               value={newRaceData.time}
               onChange={e => setNewRaceData({ ...newRaceData, time: e.target.value })}
