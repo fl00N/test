@@ -122,7 +122,7 @@ function DriversPage() {
       alert("Please fill in all fields for the race");
       return;
     }
-    if (!newRaceData.race || !newRaceData.laps || !newRaceData.time) return;
+    
     setNewDriverRaces([...newDriverRaces, { race: newRaceData.race, laps: parseInt(newRaceData.laps), time: newRaceData.time }]);
     setNewRaceData({ race: '', laps: '', time: '' });
     setShowRaceInputs(false);
@@ -176,7 +176,7 @@ function DriversPage() {
 
       <h1 className='driversText'>Drivers</h1>
 
-        <div style={{position: 'relative', left: '239px'}}>
+        <div>
           <Button onClick={() => setSortType('id')} backgroundColor={sortType === 'id' ? '#b85c1b' : '#ccc'} size='medium' margin='10px'>Sort by ID</Button>
           <Button onClick={() => setSortType('bestTime')} backgroundColor={sortType === 'bestTime' ? '#b85c1b' : '#ccc'} size='medium' margin='10px'>Sort by Best Time</Button>
           <Button onClick={() => setSortType('races')} backgroundColor={sortType === 'races' ? '#b85c1b' : '#ccc'} size='medium' margin='10px'>Sort by Races</Button>
